@@ -218,5 +218,3 @@ This README outlines:
 - Details about the PlatformIO configuration (.ini file) including optional build flags and serial speeds.
 - Installing esptool and merging all binaries into a single firmware image.
 - Configuring and running the project in the Wokwi simulator.
-
-For more details on PlatformIO configuration files, refer to the [PlatformIO Project Configuration documentation](https://docs.platformio.org/page/projectconf.html).
