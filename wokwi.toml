@@ -1,11 +1,7 @@
 [wokwi]
 version = 1
 elf = ".pio/build/esp32/firmware.elf"
-firmware = ".pio/build/esp32/firmware.bin"
-
-[[spiffs]]
-source = "data/test.html"
-image = ".pio/build/esp32/spiffs.bin"  # SPIFFS image you want to use for simulation
+firmware = ".pio/build/esp32/merged_firmware.bin"
 
 [[net.forward]]
 from = "localhost:8180"
