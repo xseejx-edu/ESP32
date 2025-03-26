@@ -1,3 +1,4 @@
+<!--
 # ESP32 DHT22 and SPIFFS Project
 
 This project demonstrates reading temperature and humidity from a DHT22 sensor using an ESP32, along with integrating a SPI Flash File System (SPIFFS) to store additional data. The complete firmware—including bootloader, partition table, main firmware, and SPIFFS image—is merged into a single binary for use in the Wokwi simulator.
