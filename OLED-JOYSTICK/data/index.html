@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            transition: background 1s ease;
+            background: #f0f0f0;
+        }
+
+        .weather-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2), 0 0 15px rgba(255, 255, 255, 0.1) inset;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            min-width: 300px;
+        }
+
+        .value {
+            font-size: 4rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .raindrop {
+            position: absolute;
+            width: 2px;
+            height: 10px;
+            background: #00B4FF;
+            animation: fall linear infinite;
+            opacity: 0.6;
+            border-radius: 50%;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100vh) translateX(-5px); }
+            100% { transform: translateY(100vh) translateX(5px); }
+        }
+
+        .humidity-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        h1 {
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 1.5rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .temperature div:last-child,
+        .humidity div:last-child {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-card">
+        <h1>Current Conditions</h1>
+        <div class="temperature">
+            <div class="value" id="temp">--°C</div>
+            <div>Temperature</div>
+        </div>
+        <hr style="border-color: rgba(255,255,255,0.2);">
+        <div class="humidity">
+            <div class="value" id="hum">--%</div>
+            <div>Humidity</div>
+        </div>
+    </div>
+    <div class="humidity-effect" id="humidityEffect"></div>
+
+    <script>
+        function calculateHue(temp) {
+            // Improved color transition
+            if(temp <= 5) {
+                // Blue to Green transition (-40°C to 5°C)
+                const progress = (temp + 40) / 45;
+                return 240 - (120 * progress);
+            } else if(temp <= 40) {
+                // Green maintained (5°C to 40°C)
+                return 120;
+            } else {
+                // Green to Orange transition (40°C to 80°C)
+                const progress = (temp - 40) / 40;
+                return 120 - (90 * progress);
+            }
+        }
+
+        function updateWeather(temp, humidity) {
+            // Always update temperature display
+            document.getElementById('temp').textContent = `${temp.toFixed(1)}°C`;
+            const hue = calculateHue(temp);
+            document.body.style.background = `
+                linear-gradient(
+                    hsl(${hue}, 75%, 55%),
+                    hsl(${hue}, 80%, 35%)
+            `;
+
+            // Always update humidity display
+            document.getElementById('hum').textContent = `${humidity.toFixed(1)}%`;
+            const humidityEffect = document.getElementById('humidityEffect');
+            humidityEffect.innerHTML = '';
+            
+            if(humidity > 50) {
+                const dropCount = Math.min(humidity * 2, 200);
+                for(let i = 0; i < dropCount; i++) {
+                    const drop = document.createElement('div');
+                    drop.className = 'raindrop';
+                    drop.style.left = `${Math.random() * 100}%`;
+                    drop.style.animationDuration = `${0.3 + Math.random() * 0.7}s`;
+                    drop.style.animationDelay = `${Math.random() * 1}s`;
+                    if(humidity >= 100) {
+                        drop.style.width = '3px';
+                        drop.style.height = '15px';
+                        drop.style.opacity = '0.8';
+                    }
+                    humidityEffect.appendChild(drop);
+                }
+            }
+        }
+
+        // Automatic updates from ESP32
+        function fetchData() {
+            fetch('/data')
+                .then(response => response.json())
+                .then(data => {
+                    updateWeather(data.temp, data.humidity);
+                })
+                .catch(error => console.log('Error fetching data:', error));
+        }
+
+        // Initial load
+        fetchData();
+        // Update every 2 seconds
+        setInterval(fetchData, 2000);
+    </script>
+</body>
+</html>
