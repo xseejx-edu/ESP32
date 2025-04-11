@@ -20,3 +20,6 @@ PlatformIO is a professional collaborative platform for embedded development. It
 2. [PIR Motion Sensor](./PIR-MOTION-DETECTOR-SPIFFS/README.md)  
     This project involves using a PIR motion sensor to detect movement and trigger specific actions.
 
+3. [Oled Display with Joystick](./OLED-JOYSTICK/README.md)  
+    This project involves using a Oled Display with Joystick to play the game Snake.
+
